@@ -1,7 +1,10 @@
 import cv2
 import numpy as np
+from PIL import Image
 from skimage.feature import hog
-from sklearn.svm import LinearSVC
+from sklearn.svm import SVC
+from datetime import datetime
+
 from dataset import DataSet
 from model import Model
 from label import Label
@@ -16,6 +19,8 @@ class Predict:
         thresh = self.model.img_bin()
         rects = self.model.img_rects()
         clf = self.dataset.SVM()
+        chars = []
+        romanjis = []
 
         for r in rects:
             (x,y,w,h) = r
@@ -29,14 +34,14 @@ class Predict:
             roi_hog_fd = hog(roi, orientations=9, pixels_per_cell=(4, 4), cells_per_block=(2, 2),block_norm="L2-Hys")
             nbr = clf.predict(np.array([roi_hog_fd], np.float32))
             label = Label()
-            result = label.search(int(nbr[0]))
-            print(result)
-            cv2.putText(image, result, (x, y),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,0),2,cv2.LINE_AA)
-            cv2.imshow("image",image)
+            char, romanji = label.search(int(nbr[0]))
+            chars.append(char)
+            romanjis.append(romanji)
+        return chars, romanjis
 
-model = Model("test3.png")
+"""model = Model("../test1.jpg")
 dataset = DataSet()
 predict = Predict(model, dataset)
-predict.predict_in_rect()
-cv2.waitKey()
-cv2.destroyAllWindows()
+predict_img, chars, romanjis = predict.predict_in_rect()
+for char in chars:
+    print(char)"""

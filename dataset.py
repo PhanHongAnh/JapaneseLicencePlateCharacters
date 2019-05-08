@@ -1,4 +1,3 @@
-import pickle
 import cv2
 import numpy as np
 from skimage.feature import hog
@@ -17,34 +16,35 @@ class DataSet:
         X_train_bin = self.img_bin(X_train)
         X_test_bin = self.img_bin(X_test)
 
-        self.X_train, self.y_train = self.devidedData(X_train_bin, y_train)
-        self.X_test = X_test_bin
-        self.y_test = y_test
+        self.X_train, self.y_train = self.devidedData(X_train_bin, y_train, 100)
+        self.X_test, self.y_test = self.devidedData(X_test_bin, y_test, 50)
 
-    def devidedData(self, X, y):
-        number = 100
-        classes = np.zeros((49,number))
-        for i in range(0, 49):
-            ii = np.where(y == i)[0]
-            classes[i] = ii[0:number]
-        classes = classes.reshape(49*number)
+    def devidedData(self, X, y, number):
+        classes = np.zeros((42,number))
+        k = 0
+        for i in range(0, 47):
+            if (i !=4 and i != 11 and i != 28 and i != 44 and i != 45):
+                ii = np.where(y == i)[0]
+                classes[k] = ii[0:number]
+                k = k+1
+        classes = classes.reshape(42*number)
         X_l = []
         y_l = []
         for i in classes:
             X_l.append(X[int(i)])
             y_l.append(y[int(i)])
-        X_rs = np.array(X_l).reshape(49*number, 28, 28)
-        y_rs = np.array(y_l).reshape(49*number)
+        X_rs = np.array(X_l).reshape(42*number, 28, 28)
+        y_rs = np.array(y_l).reshape(42*number)
         return X_rs, y_rs
 
     def img_bin(self, array):
         bin_arr = []
         for img in array:
-            image_blurred = cv2.GaussianBlur(img, (3, 3), 0)
-            kernel = np.ones((3,3),np.uint8)
-            erosion = cv2.erode(image_blurred,kernel,iterations = 1)
+            #image_blurred = cv2.GaussianBlur(img, (3, 3), 0)
+            #kernel = np.ones((3,3),np.uint8)
+            #erosion = cv2.erode(image_blurred,kernel,iterations = 1)
 
-            im,thresh = cv2.threshold(erosion,127,255,cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
+            im,thresh = cv2.threshold(img,127,255,cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
             bin_arr.append(thresh)
         return bin_arr
 
@@ -83,18 +83,18 @@ class DataSet:
 
         accuracy_train = 0
         accuracy_test = 0
-        for i in range(0,49):
+        for i in range(0,42):
             y_index_train = np.where(self.y_train==i)
             y_index_test = np.where(self.y_test==i)
             acc_train=accuracy_score(self.y_train[y_index_train], y_pred[y_index_train])
             acc_test=accuracy_score(self.y_test[y_index_test], y_pred_test[y_index_test])
-            accuracy_train+=acc_train/49
-            accuracy_test+=acc_test/49
+            accuracy_train+=acc_train/42
+            accuracy_test+=acc_test/42
         print ('accuracy on training data(class averaged)',accuracy_train)
         print ('accuracy on test data(class averaged)',accuracy_test)
 
-dataset = DataSet()
-dataset.print_accuracy()
+#dataset = DataSet()
+
 """print(dataset.y_train[0])
 image = dataset.X_train[0]
 fd, hog_image = hog(image, orientations=9, pixels_per_cell=(4, 4),
