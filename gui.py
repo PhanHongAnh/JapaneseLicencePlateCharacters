@@ -3,7 +3,6 @@ from PIL import Image, ImageTk
 from tkinter import Frame, Tk, BOTH, Text, Label, Button, messagebox
 from tkinter.filedialog import Open
 
-from dataset import DataSet
 from model import Model
 from predict import Predict
 
@@ -42,9 +41,13 @@ class GUI(Frame):
             command=self.onOpen)
         open_bt.place(x=10, y=50)
 
+        separate_bt = Button(f2, text="Separate", bd=2, relief="raised",
+            command=self.onSeparate)
+        separate_bt.place(x=150, y=50)
+
         recognize_bt = Button(f2, text="Recognize", bd=2, relief="raised",
             command=self.onRecognize)
-        recognize_bt.place(x=150, y=50)
+        recognize_bt.place(x=280, y=50)
 
         totext = Label(f3, text="Recognized\n Characters",
             font=("Courier", 20), justify="center")
@@ -85,15 +88,19 @@ class GUI(Frame):
         imageTk = ImageTk.PhotoImage(resized_img)
         return imageTk
 
-    def onRecognize(self):
+    def onSeparate(self):
         if self.img_dir != '':
             model = Model(self.img_dir)
-            dataset = DataSet()
-            predict = Predict(model, dataset)
-
             self.rects_img = self.resize(model.print_rects())
             label = Label(self, image=self.rects_img)
             label.grid(row=0, column=0)
+        else:
+            messagebox.showwarning("Warning","Please input image")
+
+    def onRecognize(self):
+        if self.img_dir != '':
+            model = Model(self.img_dir)
+            predict = Predict(model)
 
             chars, romanjis = predict.predict_in_rect()
             for romanji in romanjis:

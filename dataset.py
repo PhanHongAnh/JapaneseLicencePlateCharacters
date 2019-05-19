@@ -4,6 +4,7 @@ from skimage.feature import hog
 from skimage import data, exposure
 from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score
+from sklearn.metrics import classification_report
 import matplotlib.pyplot as plt
 
 class DataSet:
@@ -16,8 +17,8 @@ class DataSet:
         X_train_bin = self.img_bin(X_train)
         X_test_bin = self.img_bin(X_test)
 
-        self.X_train, self.y_train = self.devidedData(X_train_bin, y_train, 100)
-        self.X_test, self.y_test = self.devidedData(X_test_bin, y_test, 50)
+        self.X_train, self.y_train = self.devidedData(X_train_bin, y_train, 10)
+        self.X_test, self.y_test = self.devidedData(X_test_bin, y_test, 5)
 
     def devidedData(self, X, y, number):
         classes = np.zeros((42,number))
@@ -69,6 +70,8 @@ class DataSet:
         gamma = 0.006783091541660457
         clf = SVC(C=C, gamma = gamma, kernel='rbf')
         clf.fit(self.X_train_feature(),self.y_train)
+        with open('Hiragana_SVC'+'.pickle', mode='wb') as f:
+            pickle.dump(clf,f)
         return clf
 
     def print_accuracy(self):
