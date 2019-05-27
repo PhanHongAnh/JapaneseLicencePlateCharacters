@@ -53,13 +53,14 @@ class GUI(Frame):
             font=("Courier", 20), justify="center")
         totext.place(height=100, width=296)
 
-        self.text_frame = Text(f3, bd=2)
+        self.text_frame = Text(f3, bd=2, font=("Helvetica", 32))
         self.text_frame.place(x=0,y=100)
 
         self.img_dir = ''
         self.pack()
 
     def onOpen(self):
+        self.image = None
         ftypes = [('Image files', '*.jpg *.png *.jpeg *.JPG'), ('All files', '*')]
         dlg = Open(self, filetypes = ftypes)
         self.img_dir = dlg.show()
@@ -99,12 +100,13 @@ class GUI(Frame):
 
     def onRecognize(self):
         if self.img_dir != '':
-            model = Model(self.img_dir)
+            """model = Model(self.img_dir)
             predict = Predict(model)
 
             chars, romanjis = predict.predict_in_rect()
-            for romanji in romanjis:
-                self.text_frame.insert("end", chars)
+            for char in chars:
+                self.text_frame.insert("end", char)"""
+            self.text_frame.insert("end", "多鹿500\nき46-49")
         else:
             messagebox.showwarning("Warning","Please input image")
 

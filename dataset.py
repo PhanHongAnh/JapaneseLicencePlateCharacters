@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+import pickle
 from skimage.feature import hog
 from skimage import data, exposure
 from sklearn.svm import SVC
@@ -14,11 +15,30 @@ class DataSet:
         X_test = np.load('../sample/kmnist/k49-test-imgs.npz')['arr_0']
         y_test = np.load('../sample/kmnist/k49-test-labels.npz')['arr_0']
 
+        """for x in X_train:
+            index = np.where(X_train == x)[0]
+            y = int(y_train[index])
+            if (y == 4 or y == 11 or y == 28 or y == 44 or y == 45 or y >= 47):
+                X_train.remove(x)
+                y_train.remove(y)
+
+        for x in X_test_bin:
+            index = np.where(X_test == x)[0]
+            y = int(y_test[index])
+            if (y == 4 or y == 11 or y == 28 or y == 44 or y == 45 or y >= 47):
+                X_test.remove(x)
+                y_test.remove(y)"""
+
         X_train_bin = self.img_bin(X_train)
         X_test_bin = self.img_bin(X_test)
 
-        self.X_train, self.y_train = self.devidedData(X_train_bin, y_train, 10)
-        self.X_test, self.y_test = self.devidedData(X_test_bin, y_test, 5)
+        #self.X_train = X_train_bin
+        #self.y_train = y_train
+        #self.X_test = X_test_bin
+        #self.y_test = y_test
+
+        self.X_train, self.y_train = self.devidedData(X_train_bin, y_train, 200)
+        self.X_test, self.y_test = self.devidedData(X_test_bin, y_test, 50)
 
     def devidedData(self, X, y, number):
         classes = np.zeros((42,number))
@@ -41,10 +61,6 @@ class DataSet:
     def img_bin(self, array):
         bin_arr = []
         for img in array:
-            #image_blurred = cv2.GaussianBlur(img, (3, 3), 0)
-            #kernel = np.ones((3,3),np.uint8)
-            #erosion = cv2.erode(image_blurred,kernel,iterations = 1)
-
             im,thresh = cv2.threshold(img,127,255,cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
             bin_arr.append(thresh)
         return bin_arr
@@ -52,7 +68,7 @@ class DataSet:
     def X_train_feature(self):
         X_train_feature = []
         for i in range(len(self.X_train)):
-            feature = hog(self.X_train[i],orientations=9,pixels_per_cell=(4,4),cells_per_block=(2,2),block_norm="L2-Hys")
+            feature = hog(self.X_train[i],orientations=9,pixels_per_cell=(2,2),cells_per_block=(1,1),block_norm="L2-Hys")
             X_train_feature.append(feature)
         X_train_feature = np.array(X_train_feature,dtype = np.float32)
         return X_train_feature
@@ -60,7 +76,7 @@ class DataSet:
     def X_test_feature(self):
         X_test_feature = []
         for i in range(len(self.X_test)):
-            feature = hog(self.X_test[i],orientations=9,pixels_per_cell=(4,4),cells_per_block=(2,2),block_norm="L2-Hys")
+            feature = hog(self.X_test[i],orientations=9,pixels_per_cell=(2,2),cells_per_block=(1,1),block_norm="L2-Hys")
             X_test_feature.append(feature)
         X_test_feature = np.array(X_test_feature,dtype=np.float32)
         return X_test_feature
@@ -84,32 +100,7 @@ class DataSet:
         acc_test=accuracy_score(self.y_test, y_pred_test)
         print ('accuracy on test data(not class average)',acc_test)
 
-        accuracy_train = 0
-        accuracy_test = 0
-        for i in range(0,42):
-            y_index_train = np.where(self.y_train==i)
-            y_index_test = np.where(self.y_test==i)
-            acc_train=accuracy_score(self.y_train[y_index_train], y_pred[y_index_train])
-            acc_test=accuracy_score(self.y_test[y_index_test], y_pred_test[y_index_test])
-            accuracy_train+=acc_train/42
-            accuracy_test+=acc_test/42
-        print ('accuracy on training data(class averaged)',accuracy_train)
-        print ('accuracy on test data(class averaged)',accuracy_test)
+        print(classification_report(self.y_test, y_pred_test))
 
 #dataset = DataSet()
-
-"""print(dataset.y_train[0])
-image = dataset.X_train[0]
-fd, hog_image = hog(image, orientations=9, pixels_per_cell=(4, 4),
-                    cells_per_block=(2, 2), visualize=True, block_norm='L2-Hys')
-
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8, 4), sharex=True, sharey=True)
-
-ax1.axis('off')
-ax1.imshow(image, cmap=plt.cm.gray)
-ax1.set_title('Input image')
-hog_image_rescaled = exposure.rescale_intensity(hog_image, in_range=(0, 10))
-ax2.axis('off')
-ax2.imshow(hog_image_rescaled, cmap=plt.cm.gray)
-ax2.set_title('Histogram of Oriented Gradients')
-plt.show()"""
+#dataset.print_accuracy()

@@ -5,6 +5,7 @@ from skimage.feature import hog
 from sklearn.svm import SVC
 from keras.datasets import mnist
 from sklearn.metrics import accuracy_score
+from sklearn.metrics import classification_report
 
 class Number:
     def __init__(self):
@@ -44,8 +45,7 @@ class Number:
         acc_test=accuracy_score(self.y_test, y_pred_test)
         print ('accuracy on test data(not class average)',acc_test)
 
-        y_pred_class = clf.predict_classes(self.X_test_feature)
-        print(classification_report(self.y_test, y_pred_class))
-
-number = Number()
-number.print_accuracy()
+#number = Number()
+#clf = pickle.load(open("Digits_SVC.pickle", "rb"))
+#y_pred = clf.predict(number.X_test_feature)
+#print(classification_report(number.y_test, y_pred))

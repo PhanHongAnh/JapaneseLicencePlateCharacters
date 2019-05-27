@@ -3,6 +3,13 @@ import numpy as np
 from PIL import Image
 from datetime import datetime
 
+def intersect(rect1, rect2):
+    left = min(rect1[0], rect2[0])
+    top  = min(rect1[1], rect2[1])
+    right = max(rect1[0] + rect1[2], rect2[0] + rect2[2])
+    bottom = max(rect1[1] + rect1[3], rect2[1] + rect2[3])
+    return (left, top, right - left, bottom - top)
+
 class Model:
     def __init__(self, img_link):
         ori_img = cv2.imread(img_link)
@@ -34,6 +41,7 @@ class Model:
         rects_num1 = []
         rects_hira = []
         rects_num2 = []
+        rects_hira_fin = []
 
         for r in rects:
             (x,y,w,h) = r
@@ -54,15 +62,19 @@ class Model:
                     rects_num2.append(r)
         rects_kanji.sort()
         rects_num1.sort()
-        rects_hira.sort() #phai gop rects_hira vao
         rects_num2.sort()
+        if (len(rects_hira) == 2):
+            rects_hira_fin.append(intersect(rects_hira[0], rects_hira[1]))
+        else:
+            rects_hira_fin = rects_hira
+
         for r in rects_num2:
             (x,y,w,h) = r
             if (h < 40):
                 rects_num2.remove(r)
 
-        final_rects = rects_kanji + rects_num1 + rects_hira +rects_num2
-        return final_rects, rects_kanji, rects_num1, rects_hira, rects_num2
+        final_rects = rects_kanji + rects_num1 + rects_hira_fin +rects_num2
+        return final_rects, rects_kanji, rects_num1, rects_hira_fin, rects_num2
 
     def print_rects(self):
         rects, rects_kanji, rects_num1, rects_hira, rects_num2 = self.img_rects()
@@ -79,3 +91,5 @@ class Model:
         date_time = now.strftime("%m%d%Y%H%M%S")
         fn = "Recognized/" + date_time + ".png"
         return fn
+
+model = Model("bien1.png")
