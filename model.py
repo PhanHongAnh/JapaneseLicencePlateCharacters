@@ -91,5 +91,3 @@ class Model:
         date_time = now.strftime("%m%d%Y%H%M%S")
         fn = "Recognized/" + date_time + ".png"
         return fn
-
-model = Model("bien1.png")
