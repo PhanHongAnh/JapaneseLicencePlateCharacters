@@ -1,22 +1,29 @@
 import csv
 
-class Label:
-    def __init__(self):
-        with open('../sample/kmnist/k49_classmap.csv', 'r') as csvFile:
-            reader = csv.DictReader(csvFile)
-            index = []
-            codepoint = []
-            char = []
-            for row in reader:
-                key = list(row.keys())
-                value = list(row.values())
-                index.append(int(value[0]))
-                codepoint.append(value[1])
-                char.append(value[2])
-            self.index = index
-            self.codepoint = codepoint
-            self.char = char
-        csvFile.close()
+with open('../sample/kmnist/k49_classmap.csv', 'r') as csvFile:
+    reader = csv.DictReader(csvFile)
+    hira_index = []
+    hira_char = []
+    for row in reader:
+        key = list(row.keys())
+        value = list(row.values())
+        hira_index.append(int(value[0]))
+        hira_char.append(value[2])
+csvFile.close()
 
-    def search(self, i):
-        return self.char[i]
+with open('../sample/kmnist/Kanji-10.csv', 'r') as csvFile:
+    reader = csv.DictReader(csvFile)
+    kanji_index = []
+    kanji_char = []
+    for row in reader:
+        key = list(row.keys())
+        value = list(row.values())
+        kanji_index.append(int(value[0]))
+        kanji_char.append(value[1])
+csvFile.close()
+
+def search_hira(i):
+    return hira_char[i]
+
+def search_kanji(i):
+    return kanji_char[i]

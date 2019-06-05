@@ -51,9 +51,9 @@ class Model:
         for r in rects:
             (x,y,w,h) = r
             if y < height/3:
-                if (x > width/5 and x < width*0.4):
+                if (x > width/5 and x < width*0.45):
                     rects_kanji.append(r)
-                elif (x > width*0.4 and x < width - width/4):
+                elif (x > width*0.45 and x < width - width/4):
                     rects_num1.append(r)
             else:
                 if (x < width/5):

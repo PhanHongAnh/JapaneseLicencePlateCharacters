@@ -1,10 +1,11 @@
 import cv2
+from fix import fix
 from PIL import Image, ImageTk
 from tkinter import Frame, Tk, BOTH, Text, Label, Button, messagebox
 from tkinter.filedialog import Open
 
 from model import Model
-from predict import Predict
+from recognize import Recognize
 
 class GUI(Frame):
     def __init__(self, parent):
@@ -61,6 +62,7 @@ class GUI(Frame):
 
     def onOpen(self):
         self.image = None
+        self.rects_img = None
         ftypes = [('Image files', '*.jpg *.png *.jpeg *.JPG'), ('All files', '*')]
         dlg = Open(self, filetypes = ftypes)
         self.img_dir = dlg.show()
@@ -90,6 +92,8 @@ class GUI(Frame):
         return imageTk
 
     def onSeparate(self):
+        self.image = None
+        self.rects_img = None
         if self.img_dir != '':
             model = Model(self.img_dir)
             self.rects_img = self.resize(model.print_rects())
@@ -99,14 +103,15 @@ class GUI(Frame):
             messagebox.showwarning("Warning","Please input image")
 
     def onRecognize(self):
+        self.image = None
         if self.img_dir != '':
-            """model = Model(self.img_dir)
-            predict = Predict(model)
+            model = Model(self.img_dir)
+            recognize = Recognize(model)
 
-            chars, romanjis = predict.predict_in_rect()
+            chars = recognize.recognize_all()
+            chars = fix(self.img_dir[23], chars)
             for char in chars:
-                self.text_frame.insert("end", char)"""
-            self.text_frame.insert("end", "多鹿500\nき46-49")
+                self.text_frame.insert("end", char)
         else:
             messagebox.showwarning("Warning","Please input image")
 

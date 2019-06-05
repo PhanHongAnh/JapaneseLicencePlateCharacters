@@ -33,7 +33,7 @@ class Number:
     def img_bin(self, array):
         bin_arr = []
         for img in array:
-            im,thresh = cv2.threshold(img,127,255,cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
+            im,thresh = cv2.threshold(img,127,255,cv2.THRESH_BINARY)
             bin_arr.append(thresh)
         return bin_arr
 
